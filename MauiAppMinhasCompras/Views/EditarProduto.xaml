@@ -8,14 +8,33 @@
         <ToolbarItem Text="Salvar" Clicked="ToolbarItem_Clicked" />
     </ContentPage.ToolbarItems>
 
-    <VerticalStackLayout Spacing="10" Padding="10">
-        <Label Text="Descrição do Produto:" />
-        <Entry x:Name="txt_descricao" Text="{Binding Descricao}" />
+    <VerticalStackLayout Spacing="15" Padding="20">
+        <!-- Descrição do Produto -->
+        <Label Text="Descrição do Produto:" FontAttributes="Bold"/>
+        <Entry x:Name="txt_descricao" Text="{Binding Descricao}" 
+               Placeholder="Digite a descrição do produto"
+               HorizontalOptions="Fill" />
 
-        <Label Text="Quantidade:" />
-        <Entry x:Name="txt_quantidade" Text="{Binding Quantidade}" Keyboard="Numeric" />
+        <!-- Quantidade -->
+        <Label Text="Quantidade:" FontAttributes="Bold"/>
+        <Entry x:Name="txt_quantidade" Text="{Binding Quantidade}" 
+               Keyboard="Numeric" Placeholder="Digite a quantidade"
+               HorizontalOptions="Fill" />
 
-        <Label Text="Preço Unitário:" />
-        <Entry x:Name="txt_preco" Text="{Binding Preco}" Keyboard="Numeric" />
+        <!-- Preço Unitário -->
+        <Label Text="Preço Unitário:" FontAttributes="Bold"/>
+        <Entry x:Name="txt_preco" Text="{Binding Preco}" 
+               Keyboard="Numeric" Placeholder="Digite o preço"
+               HorizontalOptions="Fill" />
+
+        <!-- Categoria -->
+        <Label Text="Categoria:" FontAttributes="Bold"/>
+        <Picker x:Name="picker_categoria" SelectedItem="{Binding Categoria}" 
+                Title="Selecione a Categoria" 
+                ItemsSource="{Binding Categorias}" 
+                ItemDisplayBinding="{Binding Nome}" 
+                HorizontalOptions="Fill">
+        </Picker>
+
     </VerticalStackLayout>
 </ContentPage>

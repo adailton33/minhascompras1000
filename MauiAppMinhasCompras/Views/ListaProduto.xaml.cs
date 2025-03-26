@@ -16,12 +16,15 @@ public partial class ListaProduto : ContentPage
 
     protected async override void OnAppearing()
     {
+        await AtualizarLista();
+    }
+
+    private async Task AtualizarLista()
+    {
         try
         {
             lista.Clear();
-
             List<Produto> tmp = await App.Db.GetAll();
-
             tmp.ForEach(i => lista.Add(i));
         }
         catch (Exception ex)
@@ -30,16 +33,15 @@ public partial class ListaProduto : ContentPage
         }
     }
 
-    private void ToolbarItem_Clicked(object sender, EventArgs e)
+    private async void ToolbarItem_Clicked(object sender, EventArgs e)
     {
         try
         {
-            Navigation.PushAsync(new Views.NovoProduto());
-
+            await Navigation.PushAsync(new NovoProduto());
         }
         catch (Exception ex)
         {
-            DisplayAlert("Ops", ex.Message, "OK");
+            await DisplayAlert("Ops", ex.Message, "OK");
         }
     }
 
@@ -47,14 +49,10 @@ public partial class ListaProduto : ContentPage
     {
         try
         {
-            string q = e.NewTextValue;
-
+            string q = e.NewTextValue.Trim();
             lst_produtos.IsRefreshing = true;
-
             lista.Clear();
-
             List<Produto> tmp = await App.Db.Search(q);
-
             tmp.ForEach(i => lista.Add(i));
         }
         catch (Exception ex)
@@ -67,27 +65,26 @@ public partial class ListaProduto : ContentPage
         }
     }
 
-    private void ToolbarItem_Clicked_1(object sender, EventArgs e)
+    private async void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
         double soma = lista.Sum(i => i.Total);
-
         string msg = $"O total é {soma:C}";
-
-        DisplayAlert("Total dos Produtos", msg, "OK");
+        await DisplayAlert("Total dos Produtos", msg, "OK");
     }
 
     private async void MenuItem_Clicked(object sender, EventArgs e)
     {
         try
         {
-            MenuItem selecinado = sender as MenuItem;
+            MenuItem selecionado = sender as MenuItem;
+            Produto p = selecionado?.BindingContext as Produto;
 
-            Produto p = selecinado.BindingContext as Produto;
+            if (p == null) return;
 
             bool confirm = await DisplayAlert(
-                "Tem Certeza?", $"Remover {p.Descricao}?", "Sim", "Não");
+                "Tem certeza?", $"Remover {p.Descricao}?", "Sim", "Não");
 
-            if(confirm)
+            if (confirm)
             {
                 await App.Db.Delete(p.Id);
                 lista.Remove(p);
@@ -99,40 +96,30 @@ public partial class ListaProduto : ContentPage
         }
     }
 
-    private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    private async void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
     {
         try
         {
             Produto p = e.SelectedItem as Produto;
 
-            Navigation.PushAsync(new Views.EditarProduto
+            if (p == null) return;
+
+            await Navigation.PushAsync(new EditarProduto
             {
-                BindingContext = p,
+                BindingContext = p
             });
+
+            lst_produtos.SelectedItem = null;
         }
         catch (Exception ex)
         {
-            DisplayAlert("Ops", ex.Message, "OK");
+            await DisplayAlert("Ops", ex.Message, "OK");
         }
     }
 
     private async void lst_produtos_Refreshing(object sender, EventArgs e)
     {
-        try
-        {
-            lista.Clear();
-
-            List<Produto> tmp = await App.Db.GetAll();
-
-            tmp.ForEach(i => lista.Add(i));
-        }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Ops", ex.Message, "OK");
-
-        } finally
-        {
-            lst_produtos.IsRefreshing = false;
-        }
+        await AtualizarLista();
+        lst_produtos.IsRefreshing = false;
     }
 }
