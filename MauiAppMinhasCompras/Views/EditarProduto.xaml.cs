@@ -27,7 +27,7 @@ namespace MauiAppMinhasCompras.Views
                     Categoria = picker_categoria.SelectedItem as string
                 };
 
-                // Atualiza o produto no banco de dados
+                // Atualiza o produto no banco de dados ddd
                 await App.Db.Update(p);
 
                 // Exibe uma mensagem de sucesso e retorna à página anterior
